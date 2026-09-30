@@ -1,0 +1,43 @@
+@model IEnumerable<AlMuhandisShop.Models.Supplier>
+@{ ViewData["Title"] = "الموردون"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-industry me-2"></i>الموردون</h4>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>مورد جديد</a>
+    }
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2">
+        <div class="col-md-8"><input name="search" value="@ViewBag.Search" class="form-control" placeholder="بحث باسم المورد أو الشركة..."/></div>
+        <div class="col-md-4"><button type="submit" class="btn btn-primary">بحث</button> <a asp-action="Index" class="btn btn-outline-secondary">إعادة تعيين</a></div>
+    </form>
+</div></div>
+<div class="card"><div class="card-body p-0">
+    @if (Model.Any())
+    {
+        <table class="table table-hover mb-0">
+            <thead><tr><th>المورد</th><th>الشركة</th><th>الهاتف</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr class="@(!s.IsActive ? "table-secondary" : "")">
+                        <td><a asp-action="Details" asp-route-id="@s.Id">@s.Name</a></td>
+                        <td>@s.CompanyName</td>
+                        <td>@s.Phone</td>
+                        <td><span class="badge @(s.IsActive ? "bg-success" : "bg-secondary")">@(s.IsActive ? "نشط" : "غير نشط")</span></td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@s.Id" class="btn btn-sm btn-outline-info btn-action"><i class="fas fa-eye"></i></a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="fas fa-edit"></i></a>
+                            }
+                            <a asp-action="Pay" asp-route-id="@s.Id" class="btn btn-sm btn-outline-success btn-action"><i class="fas fa-money-bill-wave"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else { <div class="empty-state"><i class="fas fa-industry"></i><p>لا يوجد موردون</p></div> }
+</div></div>

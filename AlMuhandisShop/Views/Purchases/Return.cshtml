@@ -1,0 +1,73 @@
+﻿@model AlMuhandisShop.ViewModels.CreatePurchaseReturnViewModel
+@{
+    ViewData["Title"] = "مرتجع مشتريات";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-undo me-2 text-warning"></i>مرتجع فاتورة شراء #@Model.PurchaseId</h4>
+    <a asp-action="Details" asp-route-id="@Model.PurchaseId" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> العودة</a>
+</div>
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-warning">لا توجد منتجات متاحة للإرجاع</div>
+}
+else
+{
+    <form asp-action="Return" method="post">
+        <input type="hidden" asp-for="PurchaseId" />
+        <div class="card">
+            <div class="card-header">بيانات المرتجع</div>
+            <div class="card-body">
+                <div class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Date" class="form-label">التاريخ</label>
+                        <input asp-for="Date" type="datetime-local" class="form-control" />
+                    </div>
+                    <div class="col-md-8">
+                        <label asp-for="Notes" class="form-label">ملاحظات</label>
+                        <input asp-for="Notes" class="form-control" />
+                    </div>
+                </div>
+                <table class="table">
+                    <thead><tr><th>المنتج</th><th>السعر</th><th>أقصى كمية</th><th>الكمية المرتجعة</th><th>الإجمالي</th></tr></thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            <tr>
+                                <input type="hidden" name="Items[@i].ProductId" value="@Model.Items[i].ProductId" />
+                                <input type="hidden" name="Items[@i].UnitPrice" value="@Model.Items[i].UnitPrice" />
+                                <td>@Model.Items[i].ProductName</td>
+                                <td>@Model.Items[i].UnitPrice.ToString("N2")</td>
+                                <td class="text-primary fw-bold">@Model.Items[i].MaxQuantity.ToString("N3")</td>
+                                <td>
+                                    <input type="number" name="Items[@i].Quantity" class="form-control ret-qty"
+                                           step="0.001" min="0" max="@Model.Items[i].MaxQuantity" value="0"
+                                           data-price="@Model.Items[i].UnitPrice" data-row="@i"
+                                           oninput="calcLine(@i)" />
+                                </td>
+                                <td class="fw-bold text-success" id="line-@i">0.00</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="fw-bold"><td colspan="4" class="text-end">الإجمالي:</td><td id="ret-total" class="text-success">0.00 ج.م</td></tr>
+                    </tfoot>
+                </table>
+                <button type="submit" class="btn btn-warning fw-bold"><i class="fas fa-save me-1"></i> تسجيل المرتجع</button>
+            </div>
+        </div>
+    </form>
+}
+@section Scripts {
+<script>
+function calcLine(i) {
+    const inp = document.querySelector(`[data-row="${i}"]`);
+    const qty = parseFloat(inp.value) || 0;
+    const price = parseFloat(inp.dataset.price) || 0;
+    document.getElementById(`line-${i}`).textContent = (qty * price).toFixed(2);
+    let total = 0;
+    document.querySelectorAll('.ret-qty').forEach(el => { total += (parseFloat(el.value)||0)*(parseFloat(el.dataset.price)||0); });
+    document.getElementById('ret-total').textContent = total.toFixed(2) + ' ج.م';
+}
+</script>
+}

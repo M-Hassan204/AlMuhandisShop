@@ -1,0 +1,72 @@
+@model IEnumerable<AlMuhandisShop.Models.Purchase>
+@{
+    ViewData["Title"] = "فواتير الشراء";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-truck me-2 text-primary"></i>فواتير الشراء</h4>
+    <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-1"></i>فاتورة جديدة</a>
+</div>
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small">بحث بالمورد</label>
+                <input name="search" value="@ViewBag.Search" class="form-control" placeholder="اسم المورد..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">من تاريخ</label>
+                <input name="fromDate" value="@ViewBag.FromDate" type="date" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">إلى تاريخ</label>
+                <input name="toDate" value="@ViewBag.ToDate" type="date" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">بحث</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>#</th><th>التاريخ</th><th>المورد</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>طريقة الدفع</th><th>إجراءات</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>@p.Id</td>
+                            <td>@p.Date.ToString("yyyy/MM/dd")</td>
+                            <td>@p.Supplier.Name</td>
+                            <td>@p.TotalAmount.ToString("N2")</td>
+                            <td class="text-success">@p.PaidAmount.ToString("N2")</td>
+                            <td class="@(p.RemainingAmount > 0 ? "text-danger fw-bold" : "text-success")">@p.RemainingAmount.ToString("N2")</td>
+                            <td>@p.PaymentMethod.GetDisplayName()</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@p.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="fas fa-eye"></i></a>
+                                <a asp-action="Return" asp-route-purchaseId="@p.Id" class="btn btn-sm btn-outline-warning btn-action"><i class="fas fa-undo"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="table-light fw-bold">
+                    <tr>
+                        <td colspan="3">الإجمالي</td>
+                        <td>@Model.Sum(p => p.TotalAmount).ToString("N2")</td>
+                        <td>@Model.Sum(p => p.PaidAmount).ToString("N2")</td>
+                        <td>@Model.Sum(p => p.RemainingAmount).ToString("N2")</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state"><i class="fas fa-truck"></i><p>لا توجد فواتير شراء</p></div>
+        }
+    </div>
+</div>

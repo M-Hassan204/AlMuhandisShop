@@ -1,0 +1,272 @@
+﻿@model AlMuhandisShop.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "لوحة التحكم";
+}
+
+<div class="row g-3 mb-4">
+    <!-- Stat Cards -->
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-green">
+            <div class="stat-title">مبيعات اليوم</div>
+            <div class="stat-value">@Model.TodaySales.ToString("N0")</div>
+            <div class="stat-sub">جنيه</div>
+            <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-blue">
+            <div class="stat-title">مشتريات اليوم</div>
+            <div class="stat-value">@Model.TodayPurchases.ToString("N0")</div>
+            <div class="stat-sub">جنيه</div>
+            <div class="stat-icon"><i class="fas fa-truck"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-teal">
+            <div class="stat-title">رصيد الصندوق</div>
+            <div class="stat-value">@Model.CashBalance.ToString("N0")</div>
+            <div class="stat-sub">جنيه</div>
+            <div class="stat-icon"><i class="fas fa-cash-register"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-orange">
+            <div class="stat-title">ديون العملاء</div>
+            <div class="stat-value">@Model.TotalCustomerDebt.ToString("N0")</div>
+            <div class="stat-sub">جنيه</div>
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-red">
+            <div class="stat-title">ديون الموردين</div>
+            <div class="stat-value">@Model.TotalSupplierDebt.ToString("N0")</div>
+            <div class="stat-sub">جنيه</div>
+            <div class="stat-icon"><i class="fas fa-industry"></i></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="stat-card stat-purple">
+            <div class="stat-title">المنتجات النشطة</div>
+            <div class="stat-value">@Model.ProductCount</div>
+            <div class="stat-sub">منتج</div>
+            <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Quick Actions -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">إجراءات سريعة</div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-controller="Sales" asp-action="Create" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-1"></i> فاتورة بيع جديدة
+                    </a>
+                    <a asp-controller="Purchases" asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> فاتورة شراء جديدة
+                    </a>
+                    <a asp-controller="Expenses" asp-action="Create" class="btn btn-warning text-dark">
+                        <i class="fas fa-receipt me-1"></i> تسجيل مصروف
+                    </a>
+                    <a asp-controller="Reports" asp-action="Cash" class="btn btn-outline-secondary">
+                        <i class="fas fa-cash-register me-1"></i> تقرير الصندوق
+                    </a>
+                    <a asp-controller="Reports" asp-action="Stock" class="btn btn-outline-info">
+                        <i class="fas fa-warehouse me-1"></i> تقرير المخزون
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Charts -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">المبيعات - آخر 7 أيام</div>
+            <div class="card-body">
+                <canvas id="salesChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">المشتريات - آخر 7 أيام</div>
+            <div class="card-body">
+                <canvas id="purchasesChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Recent Sales -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                آخر فواتير البيع
+                <a asp-controller="Sales" asp-action="Index" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentSales.Any())
+                {
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>العميل</th>
+                                <th>التاريخ</th>
+                                <th>الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sale in Model.RecentSales)
+                            {
+                                <tr>
+                                    <td><a asp-controller="Sales" asp-action="Details" asp-route-id="@sale.Id">@sale.Id</a></td>
+                                    <td>@(sale.Customer?.Name ?? "نقدي")</td>
+                                    <td>@sale.Date.ToString("MM/dd")</td>
+                                    <td>@sale.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="empty-state py-4">
+                        <i class="fas fa-shopping-cart d-block mb-2"></i>
+                        لا توجد مبيعات بعد
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Purchases -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                آخر فواتير الشراء
+                <a asp-controller="Purchases" asp-action="Index" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentPurchases.Any())
+                {
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المورد</th>
+                                <th>التاريخ</th>
+                                <th>الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var purchase in Model.RecentPurchases)
+                            {
+                                <tr>
+                                    <td><a asp-controller="Purchases" asp-action="Details" asp-route-id="@purchase.Id">@purchase.Id</a></td>
+                                    <td>@purchase.Supplier.Name</td>
+                                    <td>@purchase.Date.ToString("MM/dd")</td>
+                                    <td>@purchase.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="empty-state py-4">
+                        <i class="fas fa-truck d-block mb-2"></i>
+                        لا توجد مشتريات بعد
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.LowStockProducts.Any())
+{
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i> منتجات منخفضة المخزون
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>الفئة</th>
+                                <th>الكمية المتاحة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var p in Model.LowStockProducts)
+                            {
+                                <tr>
+                                    <td><a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id">@p.Name</a></td>
+                                    <td>@p.Category.Name</td>
+                                    <td class="@(p.StockQuantity <= 5 ? "stock-low" : "stock-warning")">
+                                        @p.StockQuantity.ToString("N2") @p.Unit
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+<script>
+    // Sales chart
+    new Chart(document.getElementById('salesChart'), {
+        type: 'bar',
+        data: {
+            labels: [@Html.Raw(string.Join(",", Model.SalesChart.Select(d => $"'{d.Label}'")))],
+            datasets: [{
+                label: 'المبيعات',
+                data: [@string.Join(",", Model.SalesChart.Select(d => d.Value))],
+                backgroundColor: 'rgba(46, 125, 50, 0.7)',
+                borderColor: '#2e7d32',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Purchases chart
+    new Chart(document.getElementById('purchasesChart'), {
+        type: 'bar',
+        data: {
+            labels: [@Html.Raw(string.Join(",", Model.PurchasesChart.Select(d => $"'{d.Label}'")))],
+            datasets: [{
+                label: 'المشتريات',
+                data: [@string.Join(",", Model.PurchasesChart.Select(d => d.Value))],
+                backgroundColor: 'rgba(21, 101, 192, 0.7)',
+                borderColor: '#1565c0',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
+}

@@ -1,0 +1,97 @@
+@model AlMuhandisShop.ViewModels.CustomerAccountViewModel
+@{ ViewData["Title"] = Model.Customer.Name; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-user me-2"></i>@Model.Customer.Name</h4>
+    <div class="d-flex gap-2">
+        <a asp-action="Pay" asp-route-id="@Model.Customer.Id" class="btn btn-success btn-sm"><i class="fas fa-money-bill-wave me-1"></i>تسجيل دفعة</a>
+        <a asp-action="Edit" asp-route-id="@Model.Customer.Id" class="btn btn-outline-primary btn-sm"><i class="fas fa-edit me-1"></i>تعديل</a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i>القائمة</a>
+    </div>
+</div>
+
+<!-- Account Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card stat-blue"><div class="stat-title">إجمالي المشتريات</div><div class="stat-value">@Model.TotalSales.ToString("N0")</div><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-green"><div class="stat-title">إجمالي المدفوع</div><div class="stat-value">@((Model.TotalPaidOnSales + Model.TotalPayments).ToString("N0"))</div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-orange"><div class="stat-title">المرتجعات</div><div class="stat-value">@Model.TotalReturns.ToString("N0")</div><div class="stat-icon"><i class="fas fa-undo"></i></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card @(Model.OutstandingBalance > 0 ? "stat-red" : "stat-teal")">
+            <div class="stat-title">الرصيد المستحق</div>
+            <div class="stat-value">@Model.OutstandingBalance.ToString("N0")</div>
+            <div class="stat-icon"><i class="fas fa-balance-scale"></i></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">بيانات العميل</div>
+            <div class="card-body">
+                <p><i class="fas fa-phone me-2 text-muted"></i>@Model.Customer.Phone</p>
+                <p><i class="fas fa-map-marker-alt me-2 text-muted"></i>@Model.Customer.Address</p>
+                @if (!string.IsNullOrEmpty(Model.Customer.Notes))
+                {
+                    <p><i class="fas fa-sticky-note me-2 text-muted"></i>@Model.Customer.Notes</p>
+                }
+                <span class="badge @(Model.Customer.IsActive ? "bg-success" : "bg-secondary")">@(Model.Customer.IsActive ? "نشط" : "غير نشط")</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">سجل المبيعات</div>
+            <div class="card-body p-0">
+                @if (Model.Sales.Any())
+                {
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>#</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th></tr></thead>
+                        <tbody>
+                            @foreach (var s in Model.Sales)
+                            {
+                                <tr>
+                                    <td><a asp-controller="Sales" asp-action="Details" asp-route-id="@s.Id">#@s.Id</a></td>
+                                    <td>@s.Date.ToString("yyyy/MM/dd")</td>
+                                    <td>@s.TotalAmount.ToString("N2")</td>
+                                    <td>@s.PaidAmount.ToString("N2")</td>
+                                    <td class="@(s.RemainingAmount > 0 ? "text-danger" : "")">@s.RemainingAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <div class="empty-state py-3"><p>لا توجد مبيعات</p></div> }
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">سجل الدفعات</div>
+            <div class="card-body p-0">
+                @if (Model.Payments.Any())
+                {
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>#</th><th>التاريخ</th><th>المبلغ</th><th>طريقة الدفع</th><th>ملاحظات</th></tr></thead>
+                        <tbody>
+                            @foreach (var p in Model.Payments)
+                            {
+                                <tr>
+                                    <td>@p.Id</td>
+                                    <td>@p.Date.ToString("yyyy/MM/dd")</td>
+                                    <td class="text-success fw-bold">@p.Amount.ToString("N2")</td>
+                                    <td>@p.PaymentMethod.GetDisplayName()</td>
+                                    <td>@p.Notes</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <div class="empty-state py-3"><p>لا توجد دفعات</p></div> }
+            </div>
+        </div>
+    </div>
+</div>

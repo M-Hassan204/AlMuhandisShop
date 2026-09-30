@@ -1,0 +1,70 @@
+﻿@{ ViewData["Title"] = "تقرير المرتجعات"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-undo me-2"></i>تقرير المرتجعات</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> التقارير</a>
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small">من تاريخ</label><input name="fromDate" value="@ViewBag.FromDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><label class="form-label small">إلى تاريخ</label><input name="toDate" value="@ViewBag.ToDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><button type="submit" class="btn btn-primary mt-4">بحث</button></div>
+    </form>
+</div></div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold text-warning">مرتجعات المبيعات</div>
+    <div class="card-body p-0">
+        @{
+            var saleReturns = ViewBag.SaleReturns as List<AlMuhandisShop.Models.SaleReturn>;
+        }
+        @if (saleReturns != null && saleReturns.Any())
+        {
+            <table class="table table-sm mb-0">
+                <thead><tr><th>#</th><th>فاتورة البيع</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th></tr></thead>
+                <tbody>
+                    @foreach (var r in saleReturns)
+                    {
+                        <tr>
+                            <td>@r.Id</td>
+                            <td><a asp-controller="Sales" asp-action="Details" asp-route-id="@r.SaleId">#@r.SaleId</a></td>
+                            <td>@(r.Sale?.Customer?.Name ?? "نقدي")</td>
+                            <td>@r.Date.ToString("yyyy/MM/dd")</td>
+                            <td class="text-warning fw-bold">@r.TotalAmount.ToString("N2") ج.م</td>
+                        </tr>
+                    }
+                    <tr class="fw-bold table-light"><td colspan="4" class="text-end">الإجمالي:</td><td>@saleReturns.Sum(r => r.TotalAmount).ToString("N2") ج.م</td></tr>
+                </tbody>
+            </table>
+        }
+        else { <div class="empty-state py-3"><p>لا توجد مرتجعات مبيعات</p></div> }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header fw-bold text-danger">مرتجعات المشتريات</div>
+    <div class="card-body p-0">
+        @{
+            var purchaseReturns = ViewBag.PurchaseReturns as List<AlMuhandisShop.Models.PurchaseReturn>;
+        }
+        @if (purchaseReturns != null && purchaseReturns.Any())
+        {
+            <table class="table table-sm mb-0">
+                <thead><tr><th>#</th><th>فاتورة الشراء</th><th>المورد</th><th>التاريخ</th><th>الإجمالي</th></tr></thead>
+                <tbody>
+                    @foreach (var r in purchaseReturns)
+                    {
+                        <tr>
+                            <td>@r.Id</td>
+                            <td><a asp-controller="Purchases" asp-action="Details" asp-route-id="@r.PurchaseId">#@r.PurchaseId</a></td>
+                            <td>@r.Supplier?.Name</td>
+                            <td>@r.Date.ToString("yyyy/MM/dd")</td>
+                            <td class="text-danger fw-bold">@r.TotalAmount.ToString("N2") ج.م</td>
+                        </tr>
+                    }
+                    <tr class="fw-bold table-light"><td colspan="4" class="text-end">الإجمالي:</td><td>@purchaseReturns.Sum(r => r.TotalAmount).ToString("N2") ج.م</td></tr>
+                </tbody>
+            </table>
+        }
+        else { <div class="empty-state py-3"><p>لا توجد مرتجعات مشتريات</p></div> }
+    </div>
+</div>

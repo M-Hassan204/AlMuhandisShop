@@ -1,0 +1,41 @@
+@model IEnumerable<AlMuhandisShop.Models.Category>
+@{
+    ViewData["Title"] = "الفئات";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-tags me-2"></i>الفئات</h4>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-success"><i class="fas fa-plus me-1"></i>فئة جديدة</a>
+    }
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>اسم الفئة</th><th>عدد المنتجات</th><th>إجراءات</th></tr></thead>
+            <tbody>
+                @foreach (var cat in Model)
+                {
+                    <tr>
+                        <td>@cat.Id</td>
+                        <td>@cat.Name</td>
+                        <td><span class="badge bg-primary">@cat.Products.Count</span></td>
+                        <td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="fas fa-edit"></i></a>
+                                @if (!cat.Products.Any())
+                                {
+                                    <form asp-action="Delete" asp-route-id="@cat.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger btn-action"
+                                                data-confirm="حذف الفئة '@cat.Name'؟"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

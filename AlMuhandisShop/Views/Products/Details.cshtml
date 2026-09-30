@@ -1,0 +1,94 @@
+﻿@model AlMuhandisShop.Models.Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-box me-2"></i>@Model.Name</h4>
+    <div>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm"><i class="fas fa-edit me-1"></i> تعديل</a>
+        }
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> القائمة</a>
+    </div>
+</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">بيانات المنتج</div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm">
+                    <tr><td>الفئة:</td><td><span class="badge bg-success">@Model.Category.Name</span></td></tr>
+                    <tr><td>وحدة القياس:</td><td>@(Model.Unit ?? "-")</td></tr>
+                    <tr><td>سعر الشراء:</td><td class="fw-bold">@Model.PurchasePrice.ToString("N2") ج.م</td></tr>
+                    <tr><td>سعر البيع:</td><td class="fw-bold text-success">@Model.SellingPrice.ToString("N2") ج.م</td></tr>
+                    <tr><td>هامش الربح:</td>
+                        <td class="text-success">@((Model.SellingPrice - Model.PurchasePrice).ToString("N2")) ج.م
+                            (@(Model.PurchasePrice > 0 ? ((Model.SellingPrice - Model.PurchasePrice) / Model.PurchasePrice * 100).ToString("N1") : "0")%)</td>
+                    </tr>
+                    <tr class="@(Model.StockQuantity <= 5 ? "table-danger" : Model.StockQuantity <= 10 ? "table-warning" : "")">
+                        <td>المخزون:</td>
+                        <td class="fw-bold fs-5">@Model.StockQuantity.ToString("N3") @Model.Unit</td>
+                    </tr>
+                    <tr><td>الحالة:</td>
+                        <td><span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">@(Model.IsActive ? "نشط" : "غير نشط")</span></td>
+                    </tr>
+                </table>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mt-2 text-muted small">@Model.Description</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header">آخر مبيعات هذا المنتج</div>
+            <div class="card-body p-0">
+                @if (Model.SaleItems.Any())
+                {
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>فاتورة</th><th>التاريخ</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+                        <tbody>
+                            @foreach (var si in Model.SaleItems.OrderByDescending(s => s.Sale.Date).Take(10))
+                            {
+                                <tr>
+                                    <td><a asp-controller="Sales" asp-action="Details" asp-route-id="@si.SaleId">#@si.SaleId</a></td>
+                                    <td>@si.Sale.Date.ToString("yyyy/MM/dd")</td>
+                                    <td>@si.Quantity.ToString("N3")</td>
+                                    <td>@si.UnitPrice.ToString("N2")</td>
+                                    <td>@si.Total.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <div class="empty-state py-3"><p>لا توجد مبيعات</p></div> }
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">آخر مشتريات هذا المنتج</div>
+            <div class="card-body p-0">
+                @if (Model.PurchaseItems.Any())
+                {
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>فاتورة</th><th>التاريخ</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+                        <tbody>
+                            @foreach (var pi in Model.PurchaseItems.OrderByDescending(p => p.Purchase.Date).Take(10))
+                            {
+                                <tr>
+                                    <td><a asp-controller="Purchases" asp-action="Details" asp-route-id="@pi.PurchaseId">#@pi.PurchaseId</a></td>
+                                    <td>@pi.Purchase.Date.ToString("yyyy/MM/dd")</td>
+                                    <td>@pi.Quantity.ToString("N3")</td>
+                                    <td>@pi.UnitPrice.ToString("N2")</td>
+                                    <td>@pi.Total.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else { <div class="empty-state py-3"><p>لا توجد مشتريات</p></div> }
+            </div>
+        </div>
+    </div>
+</div>

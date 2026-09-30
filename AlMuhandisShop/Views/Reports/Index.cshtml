@@ -1,0 +1,68 @@
+@{ ViewData["Title"] = "التقارير"; }
+<h4 class="mb-4"><i class="fas fa-chart-bar me-2"></i>التقارير</h4>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a asp-action="Sales" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-success"><i class="fas fa-shopping-cart"></i></div>
+                <div><div class="fw-bold">تقرير المبيعات</div><div class="text-muted small">تفاصيل جميع فواتير البيع</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Purchases" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-primary"><i class="fas fa-truck"></i></div>
+                <div><div class="fw-bold">تقرير المشتريات</div><div class="text-muted small">تفاصيل جميع فواتير الشراء</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="CustomerDebts" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-orange"><i class="fas fa-users"></i></div>
+                <div><div class="fw-bold">ديون العملاء</div><div class="text-muted small">أرصدة مستحقة من العملاء</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="SupplierDebts" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-danger"><i class="fas fa-industry"></i></div>
+                <div><div class="fw-bold">ديون الموردين</div><div class="text-muted small">أرصدة مستحقة للموردين</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Cash" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-teal"><i class="fas fa-cash-register"></i></div>
+                <div><div class="fw-bold">تقرير الصندوق</div><div class="text-muted small">حركة الأموال الواردة والصادرة</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Expenses" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-warning"><i class="fas fa-receipt"></i></div>
+                <div><div class="fw-bold">تقرير المصاريف</div><div class="text-muted small">تفاصيل مصاريف المحل</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Stock" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-info"><i class="fas fa-warehouse"></i></div>
+                <div><div class="fw-bold">تقرير المخزون</div><div class="text-muted small">الكميات المتاحة وقيمة المخزون</div></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Returns" class="card text-decoration-none h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="fs-2 text-secondary"><i class="fas fa-undo"></i></div>
+                <div><div class="fw-bold">تقرير المرتجعات</div><div class="text-muted small">مرتجعات المبيعات والمشتريات</div></div>
+            </div>
+        </a>
+    </div>
+</div>

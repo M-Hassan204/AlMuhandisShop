@@ -1,0 +1,127 @@
+﻿@model AlMuhandisShop.ViewModels.SaleDetailViewModel
+@{
+    ViewData["Title"] = $"فاتورة بيع #{Model.Sale.Id}";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-file-invoice me-2 text-success"></i>فاتورة بيع رقم @Model.Sale.Id</h4>
+    <div class="d-flex gap-2">
+        <a asp-action="Return" asp-route-saleId="@Model.Sale.Id" class="btn btn-warning btn-sm">
+            <i class="fas fa-undo me-1"></i> مرتجع
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-right me-1"></i> القائمة
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">بنود الفاتورة</div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int n = 1;}
+                        @foreach (var item in Model.Sale.SaleItems)
+                        {
+                            <tr>
+                                <td>@(n++)</td>
+                                <td>@item.Product.Name</td>
+                                <td>@item.Quantity.ToString("N3")</td>
+                                <td>@item.UnitPrice.ToString("N2")</td>
+                                <td>@item.Total.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end">الإجمالي:</td>
+                            <td>@Model.Sale.TotalAmount.ToString("N2")</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        @if (Model.Sale.SaleReturns.Any())
+        {
+            <div class="card mt-3">
+                <div class="card-header text-warning">المرتجعات</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr><th>رقم المرتجع</th><th>التاريخ</th><th>الإجمالي</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ret in Model.Sale.SaleReturns)
+                            {
+                                <tr>
+                                    <td>@ret.Id</td>
+                                    <td>@ret.Date.ToString("yyyy/MM/dd")</td>
+                                    <td>@ret.TotalAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">ملخص الفاتورة</div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm">
+                    <tr><td>التاريخ:</td><td class="text-end">@Model.Sale.Date.ToString("yyyy/MM/dd HH:mm")</td></tr>
+                    <tr><td>العميل:</td><td class="text-end">@(Model.Sale.Customer?.Name ?? "نقدي")</td></tr>
+                    <tr><td>طريقة الدفع:</td><td class="text-end">@Model.Sale.PaymentMethod.GetDisplayName()</td></tr>
+                    @if (!string.IsNullOrEmpty(Model.Sale.Notes))
+                    {
+                        <tr><td>ملاحظات:</td><td class="text-end">@Model.Sale.Notes</td></tr>
+                    }
+                    <tr class="table-success fw-bold">
+                        <td>إجمالي الفاتورة:</td>
+                        <td class="text-end">@Model.Sale.TotalAmount.ToString("N2") ج.م</td>
+                    </tr>
+                    @if (Model.TotalReturned > 0)
+                    {
+                        <tr class="text-warning">
+                            <td>إجمالي المرتجع:</td>
+                            <td class="text-end">@Model.TotalReturned.ToString("N2") ج.م</td>
+                        </tr>
+                        <tr class="fw-bold">
+                            <td>الصافي:</td>
+                            <td class="text-end">@Model.NetAmount.ToString("N2") ج.م</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>المدفوع:</td>
+                        <td class="text-end text-success">@Model.Sale.PaidAmount.ToString("N2") ج.م</td>
+                    </tr>
+                    <tr class="@(Model.Sale.RemainingAmount > 0 ? "text-danger" : "text-success") fw-bold">
+                        <td>المتبقي:</td>
+                        <td class="text-end">@Model.Sale.RemainingAmount.ToString("N2") ج.م</td>
+                    </tr>
+                </table>
+
+                @if (Model.Sale.CustomerId.HasValue && Model.Sale.RemainingAmount > 0)
+                {
+                    <a asp-controller="Customers" asp-action="Pay" asp-route-id="@Model.Sale.CustomerId"
+                       class="btn btn-success w-100 mt-2">
+                        <i class="fas fa-money-bill-wave me-1"></i> تسجيل دفعة من العميل
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

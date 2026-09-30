@@ -1,0 +1,29 @@
+﻿@{ ViewData["Title"] = "ديون العملاء"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-users me-2 text-warning"></i>ديون العملاء</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> التقارير</a>
+</div>
+<div class="alert alert-warning"><strong>إجمالي ديون العملاء: @((decimal)ViewBag.TotalDebt).ToString("N2") ج.م</strong></div>
+<div class="card"><div class="card-body p-0">
+    @{
+        var debts = ViewBag.CustomerDebts as List<(AlMuhandisShop.Models.Customer Customer, decimal Balance)>;
+    }
+    @if (debts != null && debts.Any())
+    {
+        <table class="table table-hover mb-0">
+            <thead><tr><th>العميل</th><th>الهاتف</th><th>الرصيد المستحق</th><th>إجراءات</th></tr></thead>
+            <tbody>
+                @foreach (var (customer, balance) in debts)
+                {
+                    <tr>
+                        <td><a asp-controller="Customers" asp-action="Details" asp-route-id="@customer.Id">@customer.Name</a></td>
+                        <td>@customer.Phone</td>
+                        <td class="fw-bold text-danger">@balance.ToString("N2") ج.م</td>
+                        <td><a asp-controller="Customers" asp-action="Pay" asp-route-id="@customer.Id" class="btn btn-sm btn-outline-success"><i class="fas fa-money-bill-wave me-1"></i>تسجيل دفعة</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else { <div class="empty-state"><i class="fas fa-check-circle text-success"></i><p class="text-success">لا توجد ديون مستحقة على العملاء!</p></div> }
+</div></div>

@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "تسجيل دفعة عميل";
+    decimal balance = (decimal)ViewBag.Balance;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-money-bill-wave me-2 text-success"></i>تسجيل دفعة - @ViewBag.CustomerName</h4>
+    <a asp-action="Details" asp-route-id="@ViewBag.CustomerId" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> ملف العميل</a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info mb-3">
+                    <strong>الرصيد المستحق: @balance.ToString("N2") ج.م</strong>
+                </div>
+                <form asp-action="Pay" asp-route-id="@ViewBag.CustomerId" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">المبلغ</label>
+                        <input type="number" name="amount" class="form-control" step="0.01" min="0.01" max="@balance" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">التاريخ</label>
+                        <input type="datetime-local" name="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">طريقة الدفع</label>
+                        <select name="method" class="form-select">
+                            <option value="1">نقدي</option>
+                            <option value="2">تحويل بنكي</option>
+                            <option value="3">شيك</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات</label>
+                        <input type="text" name="notes" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-success w-100"><i class="fas fa-save me-1"></i> تسجيل الدفعة</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

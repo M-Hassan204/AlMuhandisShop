@@ -1,0 +1,48 @@
+﻿@model IEnumerable<AlMuhandisShop.Models.Expense>
+@{ ViewData["Title"] = "المصاريف"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-receipt me-2 text-warning"></i>المصاريف</h4>
+    <a asp-action="Create" class="btn btn-warning text-dark"><i class="fas fa-plus me-1"></i>مصروف جديد</a>
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small">من تاريخ</label><input name="fromDate" value="@ViewBag.FromDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><label class="form-label small">إلى تاريخ</label><input name="toDate" value="@ViewBag.ToDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><button type="submit" class="btn btn-primary mt-4">بحث</button></div>
+    </form>
+</div></div>
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <span>إجمالي المصاريف: <strong>@ViewBag.Total?.ToString("N2") ج.م</strong></span>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <table class="table table-hover mb-0">
+                <thead><tr><th>#</th><th>البيان</th><th>التاريخ</th><th>المبلغ</th><th>ملاحظات</th><th>إجراءات</th></tr></thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td>@e.Id</td>
+                            <td>@e.Name</td>
+                            <td>@e.Date.ToString("yyyy/MM/dd")</td>
+                            <td class="fw-bold text-danger">@e.Amount.ToString("N2")</td>
+                            <td>@e.Notes</td>
+                            <td>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-outline-primary btn-action"><i class="fas fa-edit"></i></a>
+                                    <form asp-action="Delete" asp-route-id="@e.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger btn-action" data-confirm="حذف هذا المصروف؟"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else { <div class="empty-state"><i class="fas fa-receipt"></i><p>لا توجد مصاريف</p></div> }
+    </div>
+</div>

@@ -1,0 +1,41 @@
+@model AlMuhandisShop.ViewModels.SalesReportViewModel
+@{ ViewData["Title"] = "تقرير المبيعات"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-shopping-cart me-2 text-success"></i>تقرير المبيعات</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> التقارير</a>
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small">من تاريخ</label><input asp-for="FromDate" name="fromDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><label class="form-label small">إلى تاريخ</label><input asp-for="ToDate" name="toDate" type="date" class="form-control"/></div>
+        <div class="col-md-4"><button type="submit" class="btn btn-primary mt-4">بحث</button> <a asp-action="Sales" class="btn btn-outline-secondary mt-4">كل التواريخ</a></div>
+    </form>
+</div></div>
+<div class="row g-3 mb-3">
+    <div class="col-md-4"><div class="stat-card stat-green"><div class="stat-title">إجمالي المبيعات</div><div class="stat-value">@Model.TotalSales.ToString("N0")</div><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div></div></div>
+    <div class="col-md-4"><div class="stat-card stat-blue"><div class="stat-title">إجمالي المحصّل</div><div class="stat-value">@Model.TotalPaid.ToString("N0")</div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div></div>
+    <div class="col-md-4"><div class="stat-card stat-orange"><div class="stat-title">إجمالي المتبقي</div><div class="stat-value">@Model.TotalRemaining.ToString("N0")</div><div class="stat-icon"><i class="fas fa-clock"></i></div></div></div>
+</div>
+<div class="card"><div class="card-body p-0">
+    @if (Model.Sales.Any())
+    {
+        <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>التاريخ</th><th>العميل</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>طريقة الدفع</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model.Sales)
+                {
+                    <tr>
+                        <td><a asp-controller="Sales" asp-action="Details" asp-route-id="@s.Id">@s.Id</a></td>
+                        <td>@s.Date.ToString("yyyy/MM/dd")</td>
+                        <td>@(s.Customer?.Name ?? "نقدي")</td>
+                        <td>@s.TotalAmount.ToString("N2")</td>
+                        <td>@s.PaidAmount.ToString("N2")</td>
+                        <td class="@(s.RemainingAmount > 0 ? "text-danger" : "")">@s.RemainingAmount.ToString("N2")</td>
+                        <td>@s.PaymentMethod.GetDisplayName()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else { <div class="empty-state"><i class="fas fa-shopping-cart"></i><p>لا توجد مبيعات في الفترة المحددة</p></div> }
+</div></div>

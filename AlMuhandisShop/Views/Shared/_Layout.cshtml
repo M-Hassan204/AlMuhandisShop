@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - متجر المهندس الزراعي</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- Sidebar + Main Layout -->
+        <div class="wrapper d-flex">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar-nav">
+                <div class="sidebar-brand">
+                    <i class="fas fa-seedling me-2"></i>
+                    <span>المهندس الزراعي</span>
+                </div>
+                <div class="sidebar-divider"></div>
+
+                <ul class="sidebar-menu list-unstyled">
+                    <li class="sidebar-item">
+                        <a asp-controller="Dashboard" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                            <i class="fas fa-tachometer-alt"></i> لوحة التحكم
+                        </a>
+                    </li>
+
+                    <li class="sidebar-heading">المبيعات والمشتريات</li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Sales" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Sales" ? "active" : "")">
+                            <i class="fas fa-shopping-cart"></i> فواتير البيع
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Purchases" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Purchases" ? "active" : "")">
+                            <i class="fas fa-truck"></i> فواتير الشراء
+                        </a>
+                    </li>
+
+                    <li class="sidebar-heading">المخزون</li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Products" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Products" ? "active" : "")">
+                            <i class="fas fa-boxes"></i> المنتجات
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Categories" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")">
+                            <i class="fas fa-tags"></i> الفئات
+                        </a>
+                    </li>
+
+                    <li class="sidebar-heading">العملاء والموردون</li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Customers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customers" ? "active" : "")">
+                            <i class="fas fa-users"></i> العملاء
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Suppliers" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Suppliers" ? "active" : "")">
+                            <i class="fas fa-industry"></i> الموردون
+                        </a>
+                    </li>
+
+                    <li class="sidebar-heading">المالية</li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Expenses" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Expenses" ? "active" : "")">
+                            <i class="fas fa-receipt"></i> المصاريف
+                        </a>
+                    </li>
+
+                    <li class="sidebar-heading">التقارير</li>
+                    <li class="sidebar-item">
+                        <a asp-controller="Reports" asp-action="Index" class="sidebar-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")">
+                            <i class="fas fa-chart-bar"></i> التقارير
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle fs-5"></i>
+                        <span class="ms-2">@User.Identity!.Name</span>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-light logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="main-content flex-grow-1">
+                <div class="topbar d-flex align-items-center justify-content-between">
+                    <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="breadcrumb-area">
+                        @ViewData["Title"]
+                    </div>
+                    <div class="topbar-right">
+                        <span class="text-muted small">@DateTime.Now.ToString("yyyy/MM/dd")</span>
+                    </div>
+                </div>
+
+                <div class="content-wrapper p-4">
+                    <!-- Alerts -->
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

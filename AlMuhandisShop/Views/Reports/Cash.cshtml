@@ -1,0 +1,39 @@
+@model AlMuhandisShop.ViewModels.CashReportViewModel
+@{ ViewData["Title"] = "تقرير الصندوق"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-cash-register me-2 text-teal"></i>تقرير الصندوق</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> التقارير</a>
+</div>
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4"><label class="form-label small">من تاريخ</label><input name="fromDate" type="date" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" class="form-control"/></div>
+        <div class="col-md-4"><label class="form-label small">إلى تاريخ</label><input name="toDate" type="date" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" class="form-control"/></div>
+        <div class="col-md-4"><button type="submit" class="btn btn-primary mt-4">بحث</button></div>
+    </form>
+</div></div>
+<div class="row g-3 mb-3">
+    <div class="col-md-4"><div class="stat-card stat-green"><div class="stat-title">إجمالي الوارد</div><div class="stat-value">@Model.TotalIn.ToString("N0")</div><div class="stat-icon"><i class="fas fa-arrow-down"></i></div></div></div>
+    <div class="col-md-4"><div class="stat-card stat-red"><div class="stat-title">إجمالي الصادر</div><div class="stat-value">@Model.TotalOut.ToString("N0")</div><div class="stat-icon"><i class="fas fa-arrow-up"></i></div></div></div>
+    <div class="col-md-4"><div class="stat-card @(Model.Balance >= 0 ? "stat-teal" : "stat-red")"><div class="stat-title">رصيد الصندوق الكلي</div><div class="stat-value">@Model.Balance.ToString("N0")</div><div class="stat-icon"><i class="fas fa-cash-register"></i></div></div></div>
+</div>
+<div class="card"><div class="card-body p-0">
+    @if (Model.Transactions.Any())
+    {
+        <table class="table table-sm mb-0">
+            <thead><tr><th>التاريخ</th><th>النوع</th><th>البيان</th><th>وارد</th><th>صادر</th></tr></thead>
+            <tbody>
+                @foreach (var t in Model.Transactions)
+                {
+                    <tr>
+                        <td>@t.Date.ToString("yyyy/MM/dd")</td>
+                        <td>@t.Type.GetDisplayName()</td>
+                        <td>@t.Notes</td>
+                        <td class="text-success">@(t.Direction == AlMuhandisShop.Models.CashFlowDirection.In ? t.Amount.ToString("N2") : "-")</td>
+                        <td class="text-danger">@(t.Direction == AlMuhandisShop.Models.CashFlowDirection.Out ? t.Amount.ToString("N2") : "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else { <div class="empty-state"><i class="fas fa-cash-register"></i><p>لا توجد حركات في الفترة المحددة</p></div> }
+</div></div>
